@@ -1,21 +1,27 @@
 package sort;
 
+import org.junit.Test;
+
 import java.util.Arrays;
 
 /**
  * @author tangkun
  * @date 2018-12-06
  */
-public class MergeSort {
-    static int[] arr = {4,5,6,2,8,9,1};
+public class MergeSort implements IArraySort{
 
-    public static void main(String[] args) {
-
-        int[] sort = split(arr);
+    @Test
+    public  void testSort() {
+         int[] sort = split(arr);
         System.out.println(Arrays.toString(sort));
     }
 
-    public static int[] split(int[] arr){
+    @Override
+    public int[] sort(int[] arr) {
+        return split(arr);
+    }
+
+    public  int[] split(int[] arr){
 
         //如果数组已经被拆分为每片区域只有一个元素
         if(arr.length < 2){
