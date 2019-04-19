@@ -7,7 +7,7 @@ import java.util.*;
  * @author tangkun
  * @date 2018-11-09
  */
-public class HashTest {
+public class CollectionsortSTest {
 
     public static void main(String[] args) {
         //createFile();
