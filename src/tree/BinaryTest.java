@@ -50,8 +50,42 @@ public class BinaryTest extends TestCase{
         TreeNode.postOrderTraversal(headNode,nodes);
         System.out.println("=============后序遍历=============");
         nodes.forEach(item-> System.out.println(item.getValue()));
+
+        headNode.updateHash(headNode);
     }
 
+    @Test
+    public void testGetRootHash(){
 
+        headNode.updateHash(headNode);
+        List<TreeNode> proofNodes = new ArrayList<>();
+        TreeNode treeNode = headNode.find(29, proofNodes);
+        proofNodes.forEach(item ->{
+            System.out.println(item.value);
+        });
+
+        System.out.println(verifyProof(headNode.getHash(), treeNode, proofNodes));
+    }
+
+    public boolean verifyProof(String rootHash, TreeNode node, List<TreeNode> proofNodes){
+
+        int size = proofNodes.size() - 1;
+        boolean verifyFlag = false;
+        TreeNode treeNode = proofNodes.get(size);
+        while (!verifyFlag){
+
+            if(node.getHash().equals( treeNode.getLeftHash() ) || node.getHash().equals( treeNode.getLeftHash() )){
+                treeNode = proofNodes.get(--size);
+                if(treeNode.getHash().equals(rootHash) && size == 0){
+                    verifyFlag = true;
+                }
+            }else {
+               break;
+            }
+
+        }
+
+        return verifyFlag;
+    }
 }
 

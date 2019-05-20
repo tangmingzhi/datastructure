@@ -2,7 +2,10 @@ package tree;
 
 import sort.MergeSort;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author tangkun
@@ -14,11 +17,53 @@ public class TreeNode {
     Integer value;
     TreeNode left;
     TreeNode right;
-
+    private String hash;
+    private String leftHash;
+    private String rightHash;
     public TreeNode(Integer value, TreeNode left, TreeNode right) {
         this.value = value;
         this.left = left;
         this.right = right;
+    }
+
+    public String getHash() {
+       return hash;
+    }
+
+    private String calculateHash(){
+        String hash = "value=%s&leftHash=%s&rightHash=%s";
+        hash = String.format(hash, Objects.toString(value, ""), Objects.toString(getLeftHash(), ""),
+                Objects.toString(getRightHash(), ""));
+        System.out.println("hash:"+hash);
+        hash = getMD5(hash);
+        System.out.println(String.format("value: %s hash:%s", value, hash));
+        return hash;
+    }
+
+    public void setHash(String hash) {
+        this.hash = hash;
+    }
+
+    public String getLeftHash() {
+        if(Objects.isNull(hash) && Objects.nonNull(getLeft())){
+            this.leftHash = getLeft().hash;
+        }
+        return leftHash;
+    }
+
+    public void setLeftHash(String leftHash) {
+        this.leftHash = leftHash;
+    }
+
+    public String getRightHash() {
+        if(Objects.isNull(hash) && Objects.nonNull(getRight())){
+            this.rightHash = getRight().hash;
+        }
+        return rightHash;
+    }
+
+    public void setRightHash(String rightHash) {
+        this.rightHash = rightHash;
     }
 
     public static TreeNode  setHead(Integer value){
@@ -40,6 +85,21 @@ public class TreeNode {
         }
 
         return head;
+    }
+
+    private  String getMD5(String str) {
+        try {
+            // 生成一个MD5加密计算摘要
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            // 计算md5函数
+            md.update(str.getBytes());
+            // digest()最后确定返回md5 hash值，返回值为8为字符串。因为md5 hash值是16位的hex值，实际上就是8位的字符
+            // BigInteger函数则将8位的字符串转换成16位hex值，用字符串来表示；得到字符串形式的hash值
+            return new BigInteger(1, md.digest()).toString(16);
+        } catch (Exception e) {
+            throw new RuntimeException("MD5加密出现错误");
+        }
+
     }
 
     /**
@@ -156,26 +216,28 @@ public class TreeNode {
         return  currentNode;
     }
 
-    public TreeNode find(Integer value){
+    public TreeNode find(Integer value, List<TreeNode> recodeList){
 
         TreeNode current = head;
         while (current != null){
             if(current.getValue().equals(value)){
+                //recodeList.add(current);
                 return current;
             }
-
+            recodeList.add(current);
             //左边
             if(value < current.getValue()){
                 current = current.getLeft();
             }
 
             //右边
-            if(value < current.getValue()){
+            if(value > current.getValue()){
                 current = current.getRight();
             }
         }
         return null;
     }
+
 
     /**
      * 前序遍历
@@ -190,6 +252,21 @@ public class TreeNode {
             preOrderTraversal(root.getRight(),nodes);
         }
     }
+
+
+    public  void updateHash(TreeNode root){
+
+          if(root != null) {
+              updateHash(root.getLeft());
+              updateHash(root.getRight());
+              root.setHash(root.calculateHash());
+          }
+    }
+
+//    public static void getRootHash(TreeNode root){
+//        updateHash(root)
+//    }
+
     /**
      * 中序遍历
      * @param root
